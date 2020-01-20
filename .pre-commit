@@ -1,0 +1,26 @@
+#!/bin/sh
+
+STAGED_FILES=$(git diff --cached --name-only | grep ".yml$")
+PKG_LIST=$(find ./ -name "*.yml" | grep -v .venv/)
+
+if [[ "$STAGED_FILES" = "" ]]; then
+  exit 0
+fi
+
+PASS=true
+
+for FILE in $PKG_LIST
+do
+  ansible-lint -c .ansible-lint $FILE
+
+  if [[ $? != 0 ]]; then
+    PASS=false
+  fi
+done
+
+if ! $PASS; then
+  printf "COMMIT FAILED\n"
+  exit 1
+fi
+
+exit 0
