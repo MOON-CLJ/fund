@@ -4,7 +4,7 @@ import json
 import requests
 
 resp = requests.get(
-    "http://fund.eastmoney.com/pingzhongdata/{{ code }}.js",
+    "http://fund.eastmoney.com/pingzhongdata/{{ inventory_hostname }}.js",
 )
 data = resp.text
 vars = re.findall(r"var (.+?)=(.+?);+?", data)

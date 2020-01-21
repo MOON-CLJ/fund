@@ -1,0 +1,31 @@
+#!/usr/bin/env ansible-playbook
+---
+
+- name: 获取基本信息
+  gather_facts: no
+  hosts: 基金
+  connection: local
+  tasks:
+    - name: 获取基本信息
+      include_role:
+        name: 获取基本信息
+
+    - fail:
+        msg: "{{ result_json['fS_name'] }} 六个月涨幅不超过3%"
+      when: result_json['syl_6y']|float < 3
+
+    - fail:
+        msg: "{{ result_json['fS_name'] }} 三个月跌幅已经超过4%"
+      when: result_json['syl_3y']|float < -4
+
+    - fail:
+        msg: "{{ result_json['fS_name'] }} 一个月跌幅已经超过4%"
+      when: result_json['syl_1y']|float < -4
+
+    - fail:
+        msg: "{{ result_json['fS_name'] }} 持有跌幅已经超过4%"
+      when: (result_json['Data_netWorthTrend'][-1]['y']|float * hostvars[inventory_hostname]["持有份额"] - hostvars[inventory_hostname]["持仓成本"]) / hostvars[inventory_hostname]["持仓成本"] < -0.04
+
+    - fail:
+        msg: "{{ result_json['fS_name'] }} 排名跌出3/4"
+      when: result_json['Data_rateInSimilarType'][-1]['y']|int / result_json['Data_rateInSimilarType'][-1]['sc']|int > 3/4

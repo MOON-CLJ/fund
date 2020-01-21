@@ -3,12 +3,13 @@
 
 - name: 获取基本信息
   gather_facts: no
-  hosts: 127.0.0.1
+  hosts: 基金
   connection: local
   tasks:
     - name: 获取基本信息
       include_role:
         name: 获取基本信息
-      loop: "{{ groups['基金'] }}"
-      vars:
-        code: "{{ item }}"
+
+    - fail:
+        msg: "{{ result_json['fS_name'] }} 一个月涨幅已经超过4%"
+      when: result_json['syl_1y']|float > 4

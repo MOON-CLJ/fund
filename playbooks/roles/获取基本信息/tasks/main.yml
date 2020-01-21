@@ -3,10 +3,10 @@
 - name: 生成获取基本信息的脚本
   template:
     src: get_worth.py
-    dest: "/tmp/get_worth_{{ code }}.py"
+    dest: "/tmp/get_worth_{{ inventory_hostname }}.py"
 
 - name: 执行脚本获取基本信息
-  script: "/tmp/get_worth_{{ code }}.py"
+  script: "/tmp/get_worth_{{ inventory_hostname }}.py"
   args:
     executable: python3
   retries: 3
@@ -28,4 +28,3 @@
     - 近一月收益率 {{ result_json['syl_1y'] }}
     - 最新单位净值 {{ result_json['Data_netWorthTrend'][-1]['y'] }}
     - 最新同类排名 {{ result_json['Data_rateInSimilarType'][-1]['y'] }}/{{ result_json['Data_rateInSimilarType'][-1]['sc'] }}
-    - 同类型基金涨幅榜 {{ result_json['swithSameType'] }}
