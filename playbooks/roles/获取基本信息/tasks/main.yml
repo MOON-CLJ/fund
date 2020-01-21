@@ -1,0 +1,31 @@
+---
+
+- name: 生成获取基本信息的脚本
+  template:
+    src: get_worth.py
+    dest: "/tmp/get_worth_{{ code }}.py"
+
+- name: 执行脚本获取基本信息
+  script: "/tmp/get_worth_{{ code }}.py"
+  args:
+    executable: python3
+  retries: 3
+  delay: 3
+  register: result
+  until: result.rc == 0
+
+- name: 设置result json
+  set_fact:
+    result_json: "{{ result.stdout | from_json }}"
+
+- name: 收益率
+  debug:
+    msg:
+    - 基金名字 {{ result_json['fS_name'] }}
+    - 近一年收益率 {{ result_json['syl_1n'] }}
+    - 近6月收益率 {{ result_json['syl_6y'] }}
+    - 近三月收益率 {{ result_json['syl_3y'] }}
+    - 近一月收益率 {{ result_json['syl_1y'] }}
+    - 最新单位净值 {{ result_json['Data_netWorthTrend'][-1]['y'] }}
+    - 最新同类排名 {{ result_json['Data_rateInSimilarType'][-1]['y'] }}/{{ result_json['Data_rateInSimilarType'][-1]['sc'] }}
+    - 同类型基金涨幅榜 {{ result_json['swithSameType'] }}
