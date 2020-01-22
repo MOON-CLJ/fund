@@ -1,21 +1,13 @@
 SHELL := /bin/bash
 PATH  := /usr/local/bin:$(PATH)
 APPENV_FILE := /data/webapps/appenv
-PIP_INDEX_ARGS := --index-url https://pypi.tuna.tsinghua.edu.cn/simple --extra-index-url http://pypi.sankuai.com/simple --trusted-host pypi.sankuai.com
+PIP_INDEX_ARGS := --index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
 # 判断是否是IDC机器, 如果是的话, 使用对应的配置
-TARGET_PYTHON_INTERPRETER := python3.6
+TARGET_PYTHON_INTERPRETER := python3
 VIRTUALENV_CMD := virtualenv
 
-ifeq ($(APPENV_FILE), $(wildcard $(APPENV_FILE)))
-	TARGET_PYTHON_INTERPRETER := /usr/local/python3.6.4/bin/python3.6
-	VIRTUALENV_CMD := $(shell which virtualenv)
-endif
-
 VIRTUALENV_DIR := ./.venv
-ifneq ($(MTDPDBA_VIRTUALENV_DIR),)
-	VIRTUALENV_DIR := $(MTDPDBA_VIRTUALENV_DIR)
-endif
 
 .PHONY: help
 help:

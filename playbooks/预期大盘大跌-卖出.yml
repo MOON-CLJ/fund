@@ -1,0 +1,15 @@
+#!/usr/bin/env ansible-playbook
+---
+
+- name: 获取基本信息
+  gather_facts: no
+  hosts: 基金
+  connection: local
+  tasks:
+    - name: 获取基本信息
+      include_role:
+        name: 获取基本信息
+
+    - fail:
+        msg: "{{ result_json['fS_name'] }} 持有涨幅已经超过8%"
+      when: (result_json['Data_netWorthTrend'][-1]['y']|float * hostvars[inventory_hostname]["持有份额"] - hostvars[inventory_hostname]["持仓成本"]) / hostvars[inventory_hostname]["持仓成本"] > 0.08

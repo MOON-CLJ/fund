@@ -1,0 +1,15 @@
+#!/usr/bin/env ansible-playbook
+---
+
+- name: 获取基本信息
+  gather_facts: no
+  hosts: 基金
+  connection: local
+  tasks:
+    - name: 获取基本信息
+      include_role:
+        name: 获取基本信息
+
+    - fail:
+        msg: "{{ result_json['fS_name'] }} 一个月涨幅已经超过4%"
+      when: result_json['syl_1y']|float > 4
