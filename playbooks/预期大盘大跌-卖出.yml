@@ -1,19 +1,39 @@
 #!/usr/bin/env ansible-playbook
 ---
 
-- name: 获取基本信息
+- name: 获取基金基本信息
+  gather_facts: no
+  hosts: 基金
+  connection: local
+  roles:
+    - role: 获取基金基本信息
+    - role: 设置更多基金信息
+
+- name: 分析
   gather_facts: no
   hosts: 基金
   connection: local
   tasks:
-    - name: 获取基本信息
-      include_role:
-        name: 获取基本信息
+    - fail:
+        msg: "{{ result_json['fS_name'] }} 持有收益超过200 且 涨幅已经超过4%"
+      when:
+        - 持有收益|float > 200
+        - 持有收益|float / 持仓成本|float > 0.04
 
     - fail:
-        msg: "{{ result_json['fS_name'] }} 持有涨幅已经超过8%"
-      when: (result_json['Data_netWorthTrend'][-1]['y']|float * hostvars[inventory_hostname]["持有份额"] - hostvars[inventory_hostname]["持仓成本"]) / hostvars[inventory_hostname]["持仓成本"] > 0.08
+        msg: "{{ result_json['fS_name'] }} 持仓成本超过200 且 持有涨幅已经超过8%"
+      when:
+        - 持仓成本|float > 200
+        - 持有收益|float / 持仓成本|float > 0.08
 
     - fail:
-        msg: "{{ result_json['fS_name'] }} 持有涨幅金额超过200"
-      when: (result_json['Data_netWorthTrend'][-1]['y']|float * hostvars[inventory_hostname]["持有份额"] - hostvars[inventory_hostname]["持仓成本"]) > 200
+        msg: "{{ result_json['fS_name'] }} 持仓成本超过200 且 涨幅超过4%"
+      when:
+        - 持仓成本|float > 200
+        - 持有收益|float / 持仓成本|float > 0.04
+
+    - fail:
+        msg: "{{ result_json['fS_name'] }} 持仓成本超过200 且 涨幅小于2%"
+      when:
+        - 持仓成本|float > 200
+        - 持有收益|float / 持仓成本|float < 0.02

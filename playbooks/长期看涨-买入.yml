@@ -1,15 +1,19 @@
 #!/usr/bin/env ansible-playbook
 ---
 
-- name: 获取基本信息
+- name: 获取基金基本信息
+  gather_facts: no
+  hosts: 基金
+  connection: local
+  roles:
+    - role: 获取基金基本信息
+    - role: 设置更多基金信息
+
+- name: 分析
   gather_facts: no
   hosts: 基金
   connection: local
   tasks:
-    - name: 获取基本信息
-      include_role:
-        name: 获取基本信息
-
     - fail:
         msg: "{{ result_json['fS_name'] }} 一年涨幅超过10%"
       when: result_json['syl_1n']|float > 10
