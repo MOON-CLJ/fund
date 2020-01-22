@@ -13,3 +13,7 @@
     - fail:
         msg: "{{ result_json['fS_name'] }} 持有涨幅已经超过8%"
       when: (result_json['Data_netWorthTrend'][-1]['y']|float * hostvars[inventory_hostname]["持有份额"] - hostvars[inventory_hostname]["持仓成本"]) / hostvars[inventory_hostname]["持仓成本"] > 0.08
+
+    - fail:
+        msg: "{{ result_json['fS_name'] }} 持有涨幅金额超过200"
+      when: (result_json['Data_netWorthTrend'][-1]['y']|float * hostvars[inventory_hostname]["持有份额"] - hostvars[inventory_hostname]["持仓成本"]) > 200

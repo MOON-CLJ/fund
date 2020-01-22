@@ -13,3 +13,17 @@
     - fail:
         msg: "{{ result_json['fS_name'] }} 一个月涨幅已经超过4%"
       when: result_json['syl_1y']|float > 4
+
+    - fail:
+        msg: "{{ result_json['fS_name'] }} 最近10天排名一直在涨"
+      when:
+        - result_json['Data_rateInSimilarType'][-1]['y']|int / result_json['Data_rateInSimilarType'][-1]['sc']|int >= result_json['Data_rateInSimilarType'][-2]['y']|int / result_json['Data_rateInSimilarType'][-2]['sc']|int
+        - result_json['Data_rateInSimilarType'][-2]['y']|int / result_json['Data_rateInSimilarType'][-2]['sc']|int >= result_json['Data_rateInSimilarType'][-3]['y']|int / result_json['Data_rateInSimilarType'][-3]['sc']|int
+        - result_json['Data_rateInSimilarType'][-3]['y']|int / result_json['Data_rateInSimilarType'][-3]['sc']|int >= result_json['Data_rateInSimilarType'][-4]['y']|int / result_json['Data_rateInSimilarType'][-4]['sc']|int
+        - result_json['Data_rateInSimilarType'][-4]['y']|int / result_json['Data_rateInSimilarType'][-4]['sc']|int >= result_json['Data_rateInSimilarType'][-5]['y']|int / result_json['Data_rateInSimilarType'][-5]['sc']|int
+        - result_json['Data_rateInSimilarType'][-5]['y']|int / result_json['Data_rateInSimilarType'][-5]['sc']|int >= result_json['Data_rateInSimilarType'][-6]['y']|int / result_json['Data_rateInSimilarType'][-6]['sc']|int
+        - result_json['Data_rateInSimilarType'][-6]['y']|int / result_json['Data_rateInSimilarType'][-6]['sc']|int >= result_json['Data_rateInSimilarType'][-7]['y']|int / result_json['Data_rateInSimilarType'][-7]['sc']|int
+        - result_json['Data_rateInSimilarType'][-7]['y']|int / result_json['Data_rateInSimilarType'][-7]['sc']|int >= result_json['Data_rateInSimilarType'][-8]['y']|int / result_json['Data_rateInSimilarType'][-8]['sc']|int
+        - result_json['Data_rateInSimilarType'][-8]['y']|int / result_json['Data_rateInSimilarType'][-8]['sc']|int >= result_json['Data_rateInSimilarType'][-9]['y']|int / result_json['Data_rateInSimilarType'][-9]['sc']|int
+        - result_json['Data_rateInSimilarType'][-9]['y']|int / result_json['Data_rateInSimilarType'][-9]['sc']|int >= result_json['Data_rateInSimilarType'][-10]['y']|int / result_json['Data_rateInSimilarType'][-10]['sc']|int
+        - result_json['Data_rateInSimilarType'][-10]['y']|int / result_json['Data_rateInSimilarType'][-10]['sc']|int >= result_json['Data_rateInSimilarType'][-11]['y']|int / result_json['Data_rateInSimilarType'][-11]['sc']|int
