@@ -1,15 +1,40 @@
 #!/usr/bin/env ansible-playbook
 ---
 
-- name: 获取基本信息
+- name: 获取基金基本信息
+  gather_facts: no
+  hosts: 基金
+  serial: 10
+  connection: local
+  tasks:
+    - name: 获取基金基本信息
+      include_role:
+        name: 获取基金基本信息
+
+- name: 分析
   gather_facts: no
   hosts: 基金
   connection: local
   tasks:
-    - name: 获取基本信息
-      include_role:
-        name: 获取基本信息
+    - fail:
+        msg: "{{ result_json['fS_name'] }} 近一周涨幅已经超过4% 且 近两周涨幅已经超过6%"
+      when:
+        - (result_json['Data_ACWorthTrend'][-1][1]|int - result_json['Data_ACWorthTrend'][-5][1]|int) / result_json['Data_ACWorthTrend'][-5][1]|int > 0.04
+        - (result_json['Data_ACWorthTrend'][-1][1]|int - result_json['Data_ACWorthTrend'][-10][1]|int) / result_json['Data_ACWorthTrend'][-10][1]|int > 0.06
 
     - fail:
-        msg: "{{ result_json['fS_name'] }} 一个月涨幅已经超过4%"
-      when: result_json['syl_1y']|float > 4
+        msg: "{{ result_json['fS_name'] }} 近两周涨幅已经超过6% 且 近四周涨幅已经超过10%"
+      when:
+        - (result_json['Data_ACWorthTrend'][-1][1]|int - result_json['Data_ACWorthTrend'][-10][1]|int) / result_json['Data_ACWorthTrend'][-10][1]|int > 0.06
+        - (result_json['Data_ACWorthTrend'][-1][1]|int - result_json['Data_ACWorthTrend'][-20][1]|int) / result_json['Data_ACWorthTrend'][-20][1]|int > 0.1
+
+    - fail:
+        msg: "{{ result_json['fS_name'] }} 一个月涨幅已经超过4% 且 最近5天排名一直没降且有上升"
+      when:
+        - result_json['syl_1y']|float > 4
+        - result_json['Data_rateInSimilarType'][-1]['y']|int / result_json['Data_rateInSimilarType'][-1]['sc']|int >= result_json['Data_rateInSimilarType'][-2]['y']|int / result_json['Data_rateInSimilarType'][-2]['sc']|int
+        - result_json['Data_rateInSimilarType'][-2]['y']|int / result_json['Data_rateInSimilarType'][-2]['sc']|int >= result_json['Data_rateInSimilarType'][-3]['y']|int / result_json['Data_rateInSimilarType'][-3]['sc']|int
+        - result_json['Data_rateInSimilarType'][-3]['y']|int / result_json['Data_rateInSimilarType'][-3]['sc']|int >= result_json['Data_rateInSimilarType'][-4]['y']|int / result_json['Data_rateInSimilarType'][-4]['sc']|int
+        - result_json['Data_rateInSimilarType'][-4]['y']|int / result_json['Data_rateInSimilarType'][-4]['sc']|int >= result_json['Data_rateInSimilarType'][-5]['y']|int / result_json['Data_rateInSimilarType'][-5]['sc']|int
+        - result_json['Data_rateInSimilarType'][-5]['y']|int / result_json['Data_rateInSimilarType'][-5]['sc']|int >= result_json['Data_rateInSimilarType'][-6]['y']|int / result_json['Data_rateInSimilarType'][-6]['sc']|int
+        - result_json['Data_rateInSimilarType'][-1]['y']|int / result_json['Data_rateInSimilarType'][-1]['sc']|int > result_json['Data_rateInSimilarType'][-6]['y']|int / result_json['Data_rateInSimilarType'][-6]['sc']|int

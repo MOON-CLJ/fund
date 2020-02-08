@@ -1,0 +1,19 @@
+---
+
+- name: 生成获取基本信息的脚本
+  template:
+    src: get_worth.py
+    dest: "/tmp/get_worth_{{ inventory_hostname }}.py"
+
+- name: 执行脚本获取基本信息
+  script: "/tmp/get_worth_{{ inventory_hostname }}.py"
+  args:
+    executable: python3
+  retries: 3
+  delay: 3
+  register: result
+  until: result.rc == 0
+
+- name: 设置result json
+  set_fact:
+    result_json: "{{ result.stdout | from_json }}"
